@@ -1,235 +1,135 @@
-"use client";
+'use client'
 
-import { useRef, useState } from "react";
-import { motion, useInView } from "framer-motion";
-import { ShoppingCart, Zap, Leaf, Shield, Star, Check } from "lucide-react";
-import CigaretteModel from "@/components/ui/CigaretteModel";
-import ParticleField from "@/components/ui/ParticleField";
+import { motion, useInView } from 'framer-motion'
+import { useRef, useState } from 'react'
+import { ShoppingCart, Zap, Shield, Leaf } from 'lucide-react'
+import CigaretteModel from '@/components/ui/CigaretteModel'
 
-const badges = [
-  { icon: <Leaf className="w-4 h-4" />, label: "Eco-Certified" },
-  { icon: <Zap className="w-4 h-4" />, label: "AI-Powered" },
-  { icon: <Shield className="w-4 h-4" />, label: "Lifetime Warranty" },
-];
-
-const included = [
-  "Infinicig unit — perpetually regenerating",
-  "Solar charging dock (oak + aluminium)",
-  "Lifetime AI diagnostic subscription",
-  "Global maintenance concierge access",
-  "Certificate of authenticity",
-];
-
-const reviews = [
-  { name: "Alex M.", rating: 5, text: "Changed the way I think about smoking entirely." },
-  { name: "Sophie L.", rating: 5, text: "The technology is breathtaking. Worth every cent." },
-  { name: "Jordan R.", rating: 5, text: "Never buying disposables again. This is the future." },
-];
+const trustBadges = [
+  { icon: Leaf, label: 'Eco-Certified', sub: 'ISO 14001 Compliant' },
+  { icon: Zap, label: 'AI-Powered', sub: 'Neural Processing' },
+  { icon: Shield, label: 'Lifetime Warranty', sub: 'Full Replacement' },
+]
 
 export default function PurchaseSection() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(sectionRef, { once: true });
-  const [added, setAdded] = useState(false);
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true })
+  const [added, setAdded] = useState(false)
 
   const handleAddToCart = () => {
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2500);
-  };
+    setAdded(true)
+    setTimeout(() => setAdded(false), 2000)
+  }
 
   return (
     <section
-      id="purchase"
-      ref={sectionRef}
-      className="relative min-h-screen py-24 overflow-hidden flex items-center"
+      id="order"
+      className="min-h-screen py-24 px-6 relative overflow-hidden"
       style={{
-        background: "radial-gradient(ellipse 80% 60% at 50% 20%, #bae6fd 0%, #e0f2fe 35%, #ecfdf5 65%, #fefce8 100%)",
+        background: 'radial-gradient(ellipse at 50% 0%, #bae6fd 0%, #e0f2fe 30%, #f0f9ff 70%, #f0fdf4 100%)',
       }}
     >
-      <ParticleField count={30} />
-
-      {/* Sun */}
-      <div
-        className="absolute top-10 right-16 w-28 h-28 rounded-full pointer-events-none"
-        style={{
-          background: "radial-gradient(circle, #fcd34d 30%, #f59e0b 60%, rgba(245,158,11,0) 100%)",
-          filter: "blur(4px)",
-          boxShadow: "0 0 80px 40px rgba(245,158,11,0.2)",
-        }}
+      <motion.div
+        animate={{ y: [0, -20, 0] }}
+        transition={{ duration: 8, repeat: Infinity }}
+        className="absolute top-20 right-20 w-64 h-64 rounded-full opacity-20 pointer-events-none"
+        style={{ background: 'radial-gradient(circle, #22C55E, transparent)' }}
       />
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10 w-full">
+      <div ref={ref} className="max-w-5xl mx-auto relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.7 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sky-50/80 border border-sky-200 text-sky-600 text-sm font-medium mb-6">
+          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest text-amber-600 bg-amber-100 border border-amber-200 uppercase mb-4">
             Limited First Edition
-          </div>
-          <h2 className="text-4xl md:text-6xl font-black text-slate-900 mb-4">
-            Own the{" "}
-            <span className="text-gradient-sky">Future</span>
+          </span>
+          <h2 className="text-5xl font-black text-slate-800 mb-4">
+            Own the{' '}
+            <span style={{ background: 'linear-gradient(135deg, #F59E0B, #FCD34D)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              Future
+            </span>
           </h2>
-          <p className="text-xl text-slate-500 max-w-xl mx-auto">
-            The world&apos;s first perpetually regenerating cigarette. One purchase. A lifetime of use.
+          <p className="text-lg text-slate-500 max-w-xl mx-auto">
+            Be among the first to experience the world&apos;s only self-regenerating cigarette. Production limited to 1,000 units.
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Product display */}
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.9, delay: 0.2 }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={inView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.8, delay: 0.2 }}
             className="flex flex-col items-center"
           >
-            <div
-              className="w-full max-w-md rounded-3xl p-12 flex flex-col items-center gap-8"
-              style={{
-                background: "rgba(255,255,255,0.7)",
-                backdropFilter: "blur(30px)",
-                border: "1px solid rgba(255,255,255,0.6)",
-                boxShadow: "0 30px 80px rgba(14,165,233,0.15)",
-              }}
-            >
-              <CigaretteModel size="xl" rotate={true} />
-
-              {/* Price */}
+            <CigaretteModel large />
+            <div className="mt-8 flex items-center gap-6">
               <div className="text-center">
-                <div className="text-6xl font-black text-slate-900">
-                  €<span className="text-gradient-sky">1,000</span>
-                </div>
-                <div className="text-slate-400 text-sm mt-1">One-time investment · Free worldwide shipping</div>
+                <div className="text-4xl font-black text-slate-800">€1,000</div>
+                <div className="text-sm text-slate-500">One-time investment</div>
               </div>
-
-              {/* Stars */}
-              <div className="flex items-center gap-1">
-                {[1,2,3,4,5].map(i => (
-                  <Star key={i} className="w-5 h-5 text-amber-400 fill-amber-400" />
-                ))}
-                <span className="ml-2 text-sm text-slate-500">4.9 · 847 reviews</span>
-              </div>
-
-              {/* Badges */}
-              <div className="flex flex-wrap gap-2 justify-center">
-                {badges.map((b) => (
-                  <div
-                    key={b.label}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-sky-700 bg-sky-50 border border-sky-100"
-                  >
-                    {b.icon}
-                    {b.label}
-                  </div>
-                ))}
-              </div>
-
-              {/* CTAs */}
-              <div className="w-full space-y-3">
-                <motion.button
-                  onClick={handleAddToCart}
-                  whileTap={{ scale: 0.97 }}
-                  className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl text-white font-bold text-lg transition-all duration-300"
-                  style={{
-                    background: added
-                      ? "linear-gradient(135deg, #22c55e, #16a34a)"
-                      : "linear-gradient(135deg, #0ea5e9, #0284c7)",
-                    boxShadow: added
-                      ? "0 8px 30px rgba(34,197,94,0.4)"
-                      : "0 8px 30px rgba(14,165,233,0.4)",
-                  }}
-                >
-                  {added ? (
-                    <>
-                      <Check className="w-5 h-5" />
-                      Added to Cart!
-                    </>
-                  ) : (
-                    <>
-                      <ShoppingCart className="w-5 h-5" />
-                      Add to Cart
-                    </>
-                  )}
-                </motion.button>
-
-                <motion.button
-                  whileTap={{ scale: 0.97 }}
-                  className="w-full py-4 rounded-2xl font-bold text-lg transition-all duration-300"
-                  style={{
-                    background: "linear-gradient(135deg, #f59e0b, #d97706)",
-                    color: "white",
-                    boxShadow: "0 8px 30px rgba(245,158,11,0.4)",
-                  }}
-                  whileHover={{ scale: 1.02 }}
-                >
-                  Order Now →
-                </motion.button>
+              <div className="text-left">
+                <div className="text-sm font-semibold text-emerald-600">Replaces 10,000+ disposables</div>
+                <div className="text-xs text-slate-500">Saves ~€50,000 over lifetime</div>
               </div>
             </div>
           </motion.div>
 
-          {/* Details */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
+            initial={{ opacity: 0, x: 60 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.9, delay: 0.35 }}
-            className="space-y-8"
+            transition={{ duration: 0.7, delay: 0.3 }}
+            className="rounded-3xl glass border border-sky-200 p-8 shadow-2xl"
           >
-            {/* What&apos;s included */}
-            <div
-              className="rounded-2xl p-6"
-              style={{
-                background: "rgba(255,255,255,0.8)",
-                backdropFilter: "blur(20px)",
-                border: "1px solid rgba(255,255,255,0.5)",
-                boxShadow: "0 8px 30px rgba(0,0,0,0.06)",
-              }}
-            >
-              <h3 className="font-bold text-slate-900 text-lg mb-4">What&apos;s Included</h3>
-              <ul className="space-y-3">
-                {included.map((item) => (
-                  <li key={item} className="flex items-center gap-3 text-slate-700">
-                    <div className="w-5 h-5 rounded-full bg-sky-100 flex items-center justify-center flex-shrink-0">
-                      <Check className="w-3 h-3 text-sky-600" />
-                    </div>
-                    {item}
-                  </li>
-                ))}
-              </ul>
+            <div className="space-y-4 mb-8">
+              {[
+                { label: 'Smart Filter System', value: 'Included' },
+                { label: 'Metabolic Chamber', value: 'Gen 1.0' },
+                { label: 'Nano-Vascular Network', value: '1,200 channels' },
+                { label: 'Solar Panels', value: '48 micro-cells' },
+                { label: 'AI Processor', value: 'InfiniCore™ v3' },
+                { label: 'Battery Life', value: 'Perpetual (solar)' },
+              ].map(({ label, value }) => (
+                <div key={label} className="flex justify-between text-sm border-b border-slate-100 pb-3">
+                  <span className="text-slate-600">{label}</span>
+                  <span className="font-semibold text-slate-800">{value}</span>
+                </div>
+              ))}
             </div>
 
-            {/* Reviews */}
-            <div>
-              <h3 className="font-bold text-slate-900 text-lg mb-4">Early Adopter Reviews</h3>
-              <div className="space-y-3">
-                {reviews.map((r, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={inView ? { opacity: 1, y: 0 } : {}}
-                    transition={{ delay: 0.5 + i * 0.1 }}
-                    className="p-4 rounded-xl"
-                    style={{
-                      background: "rgba(255,255,255,0.7)",
-                      border: "1px solid rgba(255,255,255,0.5)",
-                    }}
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="flex gap-0.5">
-                        {[...Array(r.rating)].map((_, j) => (
-                          <Star key={j} className="w-3 h-3 text-amber-400 fill-amber-400" />
-                        ))}
-                      </div>
-                      <span className="text-sm font-medium text-slate-700">{r.name}</span>
-                    </div>
-                    <p className="text-slate-600 text-sm">{r.text}</p>
-                  </motion.div>
-                ))}
-              </div>
+            <div className="space-y-3 mb-8">
+              <motion.button
+                onClick={handleAddToCart}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full flex items-center justify-center gap-3 py-4 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-2xl transition-all duration-300 shadow-lg text-lg"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                {added ? '✓ Added to Cart!' : 'Add to Cart'}
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full py-4 bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white font-bold rounded-2xl transition-all duration-300 shadow-lg text-lg"
+              >
+                Order Now — €1,000
+              </motion.button>
+            </div>
+
+            <div className="grid grid-cols-3 gap-3">
+              {trustBadges.map(({ icon: Icon, label, sub }) => (
+                <div key={label} className="text-center p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                  <Icon className="w-5 h-5 text-sky-500 mx-auto mb-1" />
+                  <div className="text-xs font-bold text-slate-700">{label}</div>
+                  <div className="text-xs text-slate-400">{sub}</div>
+                </div>
+              ))}
             </div>
           </motion.div>
         </div>
       </div>
     </section>
-  );
+  )
 }

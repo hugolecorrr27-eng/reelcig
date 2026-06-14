@@ -1,324 +1,224 @@
-"use client";
+'use client'
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { Layers, Zap, Network } from "lucide-react";
+import { motion, useInView } from 'framer-motion'
+import { useRef } from 'react'
+import GlowEffect from '@/components/ui/GlowEffect'
+
+function SmartFilterVisual() {
+  return (
+    <div className="relative w-40 h-40 mx-auto">
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+        className="absolute inset-0 rounded-full border-2 border-sky-300 border-dashed opacity-50"
+      />
+      <motion.div
+        animate={{ rotate: -360 }}
+        transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
+        className="absolute inset-4 rounded-full border-2 border-blue-300 border-dotted opacity-40"
+      />
+      <div className="absolute inset-8 rounded-full bg-gradient-to-br from-sky-200 to-blue-300 opacity-80 flex items-center justify-center">
+        <motion.div
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="w-10 h-10 rounded-full bg-gradient-to-br from-sky-400 to-blue-500 shadow-lg"
+          style={{ boxShadow: '0 0 20px rgba(14,165,233,0.5)' }}
+        />
+      </div>
+      {[0, 60, 120, 180, 240, 300].map((angle, i) => (
+        <motion.div
+          key={i}
+          animate={{ scale: [0, 1, 0], opacity: [0, 1, 0] }}
+          transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
+          className="absolute w-2 h-2 rounded-full bg-sky-400"
+          style={{
+            top: `${50 + 42 * Math.sin((angle * Math.PI) / 180)}%`,
+            left: `${50 + 42 * Math.cos((angle * Math.PI) / 180)}%`,
+            transform: 'translate(-50%, -50%)',
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
+function MetabolicChamberVisual() {
+  return (
+    <div className="relative w-40 h-40 mx-auto">
+      <motion.div
+        animate={{ scale: [1, 1.15, 1] }}
+        transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute inset-6 rounded-full"
+        style={{ background: 'radial-gradient(circle, #4ADE80, #22C55E, #16A34A)', boxShadow: '0 0 30px rgba(34,197,94,0.4)' }}
+      />
+      {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
+        <motion.div
+          key={i}
+          animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0.8, 0.4] }}
+          transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.15 }}
+          className="absolute w-3 h-3 rounded-full bg-emerald-400"
+          style={{
+            top: `${50 + 38 * Math.sin((angle * Math.PI) / 180)}%`,
+            left: `${50 + 38 * Math.cos((angle * Math.PI) / 180)}%`,
+            transform: 'translate(-50%, -50%)',
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
+function NanoVascularVisual() {
+  return (
+    <div className="relative w-40 h-40 mx-auto">
+      <svg viewBox="0 0 160 160" className="w-full h-full">
+        <defs>
+          <radialGradient id="goldGrad">
+            <stop offset="0%" stopColor="#FCD34D" />
+            <stop offset="100%" stopColor="#F59E0B" />
+          </radialGradient>
+        </defs>
+        {[
+          'M80 80 L30 30', 'M80 80 L130 30', 'M80 80 L20 80',
+          'M80 80 L140 80', 'M80 80 L30 130', 'M80 80 L130 130',
+          'M80 80 L80 20', 'M80 80 L80 140',
+        ].map((d, i) => (
+          <motion.path
+            key={i}
+            d={d}
+            stroke="#F59E0B"
+            strokeWidth="2"
+            fill="none"
+            strokeLinecap="round"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: [0, 1, 0], opacity: [0, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity, delay: i * 0.2 }}
+          />
+        ))}
+        {([[30,30],[130,30],[20,80],[140,80],[80,20]] as [number,number][]).map(([cx, cy], i) => (
+          <motion.circle
+            key={i}
+            cx={cx}
+            cy={cy}
+            r="5"
+            fill="#FCD34D"
+            animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.3 }}
+          />
+        ))}
+        <circle cx="80" cy="80" r="12" fill="url(#goldGrad)" />
+      </svg>
+    </div>
+  )
+}
 
 const panels = [
   {
-    id: "filter",
-    icon: <Layers className="w-7 h-7" />,
-    title: "The Smart Filter",
-    subtitle: "First Intelligent Barrier",
-    color: "sky",
-    from: "#0ea5e9",
-    to: "#38bdf8",
-    glowColor: "rgba(14,165,233,0.3)",
-    description:
-      "An advanced filtration system built from self-regenerative materials. The first intelligent barrier between the outside world and the internal biological engine — designed for virtually unlimited lifespan while maintaining a pristine smoking experience.",
-    features: [
-      "Advanced multi-layer filtration",
-      "Self-regenerative nano-materials",
-      "Virtually unlimited lifespan",
-      "Experience quality preservation",
-    ],
-    visual: <FilterVisual />,
+    id: 'smart-filter',
+    title: 'Smart Filter',
+    subtitle: 'Nanotechnology Filtration',
+    description: 'Our proprietary nano-mesh filter captures 99.7% of harmful particles while intelligently preserving beneficial compounds. Real-time AI monitoring adjusts filtration intensity based on smoking patterns.',
+    color: 'sky',
+    visual: <SmartFilterVisual />,
+    features: ['99.7% particle capture', 'AI-adaptive filtration', 'Self-cleaning nano-mesh'],
   },
   {
-    id: "chamber",
-    icon: <Zap className="w-7 h-7" />,
-    title: "The Metabolic Chamber",
-    subtitle: "Main Reactor",
-    color: "green",
-    from: "#22c55e",
-    to: "#4ade80",
-    glowColor: "rgba(34,197,94,0.3)",
-    description:
-      "The beating heart of Infinicig. This central bio-reactor converts captured solar energy into the precise resources needed to sustain, regenerate, and optimize the entire system — a living engine of perpetual renewal.",
-    features: [
-      "Solar energy conversion",
-      "Bio-reactive processing",
-      "Continuous self-optimization",
-      "Artificial photosynthesis core",
-    ],
-    visual: <ChamberVisual />,
+    id: 'metabolic-chamber',
+    title: 'Metabolic Chamber',
+    subtitle: 'Biological Processing Core',
+    description: 'The heart of Infinicig — a living chamber where organic compounds are processed through proprietary enzymatic reactions. Toxins are broken down at the molecular level before inhalation.',
+    color: 'emerald',
+    visual: <MetabolicChamberVisual />,
+    features: ['Enzymatic detoxification', 'Organic compound processing', 'Zero harmful byproducts'],
   },
   {
-    id: "network",
-    icon: <Network className="w-7 h-7" />,
-    title: "The Nano-Vascular Network",
-    subtitle: "Energy & Repair Matrix",
-    color: "gold",
-    from: "#f59e0b",
-    to: "#fcd34d",
-    glowColor: "rgba(245,158,11,0.3)",
-    description:
-      "A living network of intelligent nano-channels flowing throughout the entire structure. Distributes energy with precision, detects degraded zones in real-time, and dispatches repair resources — mimicking the circulatory system of a living organism.",
-    features: [
-      "Real-time energy distribution",
-      "Intelligent damage detection",
-      "Autonomous repair dispatch",
-      "Adaptive network topology",
-    ],
-    visual: <NetworkVisual />,
+    id: 'nano-vascular',
+    title: 'Nano-Vascular Network',
+    subtitle: 'Energy Distribution System',
+    description: 'A microscopic network of bio-compatible channels distributes solar energy and regenerative compounds throughout the cigarette structure. Modeled on biological vascular systems.',
+    color: 'amber',
+    visual: <NanoVascularVisual />,
+    features: ['Solar energy distribution', 'Bio-compatible channels', 'Self-healing pathways'],
   },
-];
+]
 
-function FilterVisual() {
-  return (
-    <div className="relative w-48 h-48 flex items-center justify-center">
-      {[80, 110, 140, 170].map((size, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full border border-sky-300/60"
-          style={{ width: size, height: size, background: `rgba(14,165,233,${0.08 - i * 0.015})` }}
-          animate={{ scale: [1, 1.06, 1], opacity: [0.6, 1, 0.6] }}
-          transition={{ duration: 2.5 + i * 0.5, repeat: Infinity, delay: i * 0.4 }}
-        />
-      ))}
-      {/* Central core */}
-      <motion.div
-        className="relative w-16 h-16 rounded-full flex items-center justify-center"
-        style={{
-          background: "linear-gradient(135deg, #38bdf8, #0ea5e9)",
-          boxShadow: "0 0 30px rgba(14,165,233,0.6)",
-        }}
-        animate={{ rotate: 360 }}
-        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-      >
-        <div className="w-4 h-4 rounded-full bg-white/80" />
-      </motion.div>
-      {/* Particle dots */}
-      {[0, 1, 2, 3, 4, 5].map((i) => {
-        const angle = (i / 6) * Math.PI * 2;
-        return (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 rounded-full bg-sky-400"
-            style={{
-              left: "50%",
-              top: "50%",
-              x: Math.cos(angle) * 55 - 4,
-              y: Math.sin(angle) * 55 - 4,
-              boxShadow: "0 0 8px 4px rgba(56,189,248,0.5)",
-            }}
-            animate={{ opacity: [0.4, 1, 0.4], scale: [0.8, 1.3, 0.8] }}
-            transition={{ duration: 2, repeat: Infinity, delay: i * 0.33 }}
-          />
-        );
-      })}
-    </div>
-  );
+const colorMap: Record<string, { bg: string; border: string; badge: string; text: string; dot: string }> = {
+  sky: { bg: 'from-sky-50 to-blue-50', border: 'border-sky-200', badge: 'bg-sky-100 text-sky-700', text: 'text-sky-600', dot: 'bg-sky-500' },
+  emerald: { bg: 'from-emerald-50 to-green-50', border: 'border-emerald-200', badge: 'bg-emerald-100 text-emerald-700', text: 'text-emerald-600', dot: 'bg-emerald-500' },
+  amber: { bg: 'from-amber-50 to-yellow-50', border: 'border-amber-200', badge: 'bg-amber-100 text-amber-700', text: 'text-amber-600', dot: 'bg-amber-500' },
 }
 
-function ChamberVisual() {
-  return (
-    <div className="relative w-48 h-48 flex items-center justify-center">
-      {/* Organic pulsing heart */}
-      <motion.div
-        className="absolute w-36 h-36 rounded-full"
-        style={{
-          background: "radial-gradient(circle, rgba(74,222,128,0.4) 0%, rgba(34,197,94,0.15) 50%, transparent 100%)",
-          boxShadow: "0 0 40px rgba(34,197,94,0.4)",
-        }}
-        animate={{ scale: [1, 1.15, 1] }}
-        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="absolute w-24 h-24 rounded-full"
-        style={{
-          background: "linear-gradient(135deg, #4ade80, #22c55e, #16a34a)",
-          boxShadow: "0 0 20px rgba(34,197,94,0.7)",
-        }}
-        animate={{ scale: [1, 1.1, 1] }}
-        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
-      />
-      {/* Energy lines */}
-      {[0, 45, 90, 135].map((angle) => (
-        <motion.div
-          key={angle}
-          className="absolute rounded-full"
-          style={{
-            width: 70,
-            height: 2,
-            background: "linear-gradient(90deg, transparent, rgba(74,222,128,0.8), transparent)",
-            transformOrigin: "center",
-            rotate: angle,
-          }}
-          animate={{ opacity: [0, 1, 0], scaleX: [0, 1, 0] }}
-          transition={{ duration: 1.8, repeat: Infinity, delay: (angle / 135) * 0.6 }}
-        />
-      ))}
-      {/* Photosynthesis effect */}
-      <motion.div
-        className="absolute w-4 h-4 rounded-full"
-        style={{ background: "rgba(252,211,77,0.9)", boxShadow: "0 0 12px 6px rgba(245,158,11,0.5)" }}
-        animate={{
-          x: [0, -40, 0, 40, 0],
-          y: [0, 20, -30, 20, 0],
-          opacity: [0, 1, 1, 1, 0],
-        }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-      />
-    </div>
-  );
-}
-
-function NetworkVisual() {
-  const nodes = [
-    { x: 96, y: 24 },
-    { x: 168, y: 72 },
-    { x: 144, y: 152 },
-    { x: 48, y: 152 },
-    { x: 24, y: 72 },
-    { x: 96, y: 96 },
-  ];
-
-  return (
-    <div className="relative w-48 h-48">
-      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 192 192">
-        {/* Connections */}
-        {nodes.slice(0, 5).map((node, i) => {
-          const next = nodes[(i + 1) % 5];
-          const center = nodes[5];
-          return (
-            <g key={i}>
-              <motion.line
-                x1={node.x} y1={node.y} x2={next.x} y2={next.y}
-                stroke="rgba(245,158,11,0.3)" strokeWidth="1"
-              />
-              <motion.line
-                x1={node.x} y1={node.y} x2={center.x} y2={center.y}
-                stroke="rgba(245,158,11,0.2)" strokeWidth="1"
-              />
-              <motion.circle cx={node.x} cy={node.y} r="1.5" fill="rgba(245,158,11,0.8)">
-                <animate attributeName="r" values="1.5;3;1.5" dur={`${1.5 + i * 0.3}s`} repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.5;1;0.5" dur={`${1.5 + i * 0.3}s`} repeatCount="indefinite" />
-              </motion.circle>
-              {/* Moving pulse along edge→center */}
-              <motion.circle
-                r="2"
-                fill="rgba(252,211,77,1)"
-                style={{ filter: "blur(1px)" }}
-                animate={{
-                  cx: [node.x, center.x],
-                  cy: [node.y, center.y],
-                  opacity: [0, 1, 0],
-                }}
-                transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.3 }}
-              />
-            </g>
-          );
-        })}
-        {/* Center node */}
-        <motion.circle
-          cx={96} cy={96} r="10"
-          fill="none" stroke="rgba(245,158,11,0.6)" strokeWidth="2"
-          animate={{ r: [10, 14, 10] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
-        <circle cx={96} cy={96} r="5" fill="rgba(245,158,11,0.9)" />
-      </svg>
-    </div>
-  );
-}
-
-function PanelCard({
-  panel,
-  index,
-}: {
-  panel: (typeof panels)[0];
-  index: number;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+function PanelCard({ panel, index }: { panel: typeof panels[0]; index: number }) {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-100px' })
+  const colors = colorMap[panel.color]
 
   return (
     <motion.div
       ref={ref}
       initial={{ opacity: 0, y: 60 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.8, delay: index * 0.15, ease: [0.22, 1, 0.36, 1] }}
-      className="grid md:grid-cols-2 gap-10 items-center py-16 border-b border-slate-100 last:border-none"
+      transition={{ duration: 0.7, delay: index * 0.15 }}
+      className={`relative rounded-3xl border ${colors.border} bg-gradient-to-br ${colors.bg} p-8 shadow-xl overflow-hidden`}
     >
-      {/* Text side */}
-      <div className={index % 2 === 1 ? "md:order-2" : ""}>
-        <div
-          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold mb-4"
-          style={{
-            background: `linear-gradient(135deg, ${panel.from}22, ${panel.to}22)`,
-            color: panel.from,
-            border: `1px solid ${panel.from}33`,
-          }}
-        >
-          {panel.icon}
+      <GlowEffect color={panel.color} />
+      <div className="relative z-10">
+        <div className="mb-6">{panel.visual}</div>
+        <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${colors.badge} mb-3`}>
           {panel.subtitle}
-        </div>
-        <h3 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">{panel.title}</h3>
-        <p className="text-slate-600 text-lg leading-relaxed mb-6">{panel.description}</p>
+        </span>
+        <h3 className={`text-2xl font-black ${colors.text} mb-3`}>{panel.title}</h3>
+        <p className="text-slate-600 leading-relaxed mb-5 text-sm">{panel.description}</p>
         <ul className="space-y-2">
           {panel.features.map((f) => (
-            <li key={f} className="flex items-center gap-3 text-slate-700">
-              <div
-                className="w-2 h-2 rounded-full flex-shrink-0"
-                style={{ background: `linear-gradient(135deg, ${panel.from}, ${panel.to})` }}
-              />
+            <li key={f} className="flex items-center gap-2 text-sm text-slate-600">
+              <div className={`w-2 h-2 rounded-full ${colors.dot}`} />
               {f}
             </li>
           ))}
         </ul>
       </div>
-
-      {/* Visual side */}
-      <div
-        className={`flex justify-center items-center rounded-3xl p-10 ${index % 2 === 1 ? "md:order-1" : ""}`}
-        style={{
-          background: `radial-gradient(ellipse at center, ${panel.glowColor} 0%, rgba(248,250,252,0.8) 70%)`,
-          boxShadow: `0 0 60px ${panel.glowColor}`,
-        }}
-      >
-        {panel.visual}
-      </div>
     </motion.div>
-  );
+  )
 }
 
 export default function AnatomySection() {
-  const titleRef = useRef<HTMLDivElement>(null);
-  const titleInView = useInView(titleRef, { once: true });
+  const titleRef = useRef(null)
+  const titleInView = useInView(titleRef, { once: true })
 
   return (
-    <section id="anatomy" className="relative py-24 overflow-hidden bg-gradient-to-b from-sky-50/40 to-white">
-      {/* Background decoration */}
-      <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-full opacity-20"
-        style={{ background: "linear-gradient(to bottom, transparent, #0ea5e9, transparent)" }}
-      />
-
-      <div className="max-w-6xl mx-auto px-6">
+    <section
+      id="concept"
+      className="min-h-screen py-24 px-6"
+      style={{ background: 'linear-gradient(180deg, #ffffff 0%, #f0f9ff 50%, #ffffff 100%)' }}
+    >
+      <div className="max-w-7xl mx-auto">
         <motion.div
           ref={titleRef}
           initial={{ opacity: 0, y: 40 }}
           animate={titleInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.7 }}
           className="text-center mb-20"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sky-50 border border-sky-200 text-sky-600 text-sm font-medium mb-6">
-            Internal Engineering
-          </div>
-          <h2 className="text-4xl md:text-6xl font-black text-slate-900 mb-6">
-            The Anatomy of the{" "}
-            <span className="text-gradient-sky">System</span>
+          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest text-sky-600 bg-sky-100 border border-sky-200 uppercase mb-4">
+            Internal Architecture
+          </span>
+          <h2 className="text-5xl font-black text-slate-800 mb-4">
+            Three Pillars of{' '}
+            <span style={{ background: 'linear-gradient(135deg, #0EA5E9, #3B82F6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              Innovation
+            </span>
           </h2>
-          <p className="text-xl text-slate-500 max-w-2xl mx-auto">
-            Three interlocking biological-synthetic systems working in harmony to create a perpetually self-renewing experience.
+          <p className="text-lg text-slate-500 max-w-2xl mx-auto">
+            Each component works in harmony, creating a biological feedback loop that regenerates the cigarette from within.
           </p>
         </motion.div>
-
-        {panels.map((panel, i) => (
-          <PanelCard key={panel.id} panel={panel} index={i} />
-        ))}
+        <div id="technology" className="grid md:grid-cols-3 gap-8">
+          {panels.map((panel, i) => (
+            <PanelCard key={panel.id} panel={panel} index={i} />
+          ))}
+        </div>
       </div>
     </section>
-  );
+  )
 }

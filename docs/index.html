@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Infinicig – The First Actively Regenerating Cigarette</title>
+  <meta name="description" content="La première cigarette activement régénérante. Technologie solaire, IA embarquée, réseau nano-vasculaire. Remplace 10 000 cigarettes jetables." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sky: #0ea5e9;
+      --sky-light: #38bdf8;
+      --sky-50: #f0f9ff;
+      --sky-100: #e0f2fe;
+      --green: #22c55e;
+      --green-light: #4ade80;
+      --gold: #f59e0b;
+      --gold-light: #fcd34d;
+      --slate-900: #0f172a;
+      --slate-700: #334155;
+      --slate-500: #64748b;
+      --slate-400: #94a3b8;
+      --slate-100: #f1f5f9;
+      --white: #ffffff;
+    }
+
+    html { font-family: 'Inter', system-ui, sans-serif; }
+    body { overflow-x: hidden; background: #f8fafc; color: var(--slate-900); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--sky-100); }
+    ::-webkit-scrollbar-thumb { background: var(--sky); border-radius: 3px; }
+
+    /* ── Utilities ── */
+    .glass {
+      background: rgba(255,255,255,0.72);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.55);
+    }
+    .text-gradient {
+      background: linear-gradient(135deg, #0ea5e9, #38bdf8, #22c55e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .text-gradient-gold {
+      background: linear-gradient(135deg, #f59e0b, #fcd34d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── Animations ── */
+    @keyframes float        { 0%,100%{transform:translateY(0)}  50%{transform:translateY(-18px)} }
+    @keyframes floatSlow    { 0%,100%{transform:translateY(0)}  50%{transform:translateY(-10px)} }
+    @keyframes pulseGlow    { 0%,100%{opacity:.55;transform:scale(1)} 50%{opacity:1;transform:scale(1.08)} }
+    @keyframes spinSlow     { to{transform:rotate(360deg)} }
+    @keyframes spinReverse  { to{transform:rotate(-360deg)} }
+    @keyframes shimmer      { 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+    @keyframes pathDraw     { 0%{stroke-dashoffset:200} 50%{stroke-dashoffset:0} 100%{stroke-dashoffset:-200} }
+    @keyframes blink        { 0%,100%{opacity:.35} 50%{opacity:1} }
+    @keyframes slideUp      { from{opacity:0;transform:translateY(32px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeIn       { from{opacity:0} to{opacity:1} }
+    @keyframes pulseDot     { 0%,100%{transform:scale(.8);opacity:.5} 50%{transform:scale(1.3);opacity:1} }
+    @keyframes particleRise { 0%{transform:translateY(0) scale(1);opacity:.7} 100%{transform:translateY(-80px) scale(.3);opacity:0} }
+    @keyframes orbMove      { 0%,100%{transform:translate(0,0)} 25%{transform:translate(12px,-8px)} 50%{transform:translate(-6px,14px)} 75%{transform:translate(-14px,-4px)} }
+    @keyframes scanLine     { 0%,100%{top:8%} 50%{top:88%} }
+    @keyframes rayPulse     { 0%,100%{transform:translateX(-50%) rotate(var(--a)) scaleY(.3);opacity:.3} 50%{transform:translateX(-50%) rotate(var(--a)) scaleY(1);opacity:1} }
+    @keyframes heartbeat    { 0%,100%{transform:scale(1)} 30%{transform:scale(1.12)} 60%{transform:scale(.96)} }
+    @keyframes nodeFlash    { 0%,100%{r:4;opacity:.5} 50%{r:7;opacity:1} }
+    @keyframes number-up    { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+    .anim-float     { animation: float 6s ease-in-out infinite; }
+    .anim-float-slow{ animation: floatSlow 9s ease-in-out infinite; }
+    .anim-pulse     { animation: pulseGlow 4s ease-in-out infinite; }
+    .anim-spin      { animation: spinSlow 18s linear infinite; }
+    .anim-spin-rev  { animation: spinReverse 12s linear infinite; }
+
+    /* ── Reveal on scroll ── */
+    .reveal { opacity:0; transform:translateY(40px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.visible { opacity:1; transform:none; }
+    .reveal-left  { opacity:0; transform:translateX(-50px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal-left.visible { opacity:1; transform:none; }
+    .reveal-right { opacity:0; transform:translateX(50px);  transition: opacity .7s ease, transform .7s ease; }
+    .reveal-right.visible { opacity:1; transform:none; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top:0; left:0; right:0; z-index:100;
+      transition: all .35s ease;
+      padding: 18px 0;
+    }
+    nav.scrolled { background: rgba(255,255,255,.82); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid rgba(255,255,255,.5); box-shadow:0 4px 24px rgba(14,165,233,.08); padding:12px 0; }
+    .nav-inner { max-width:1280px; margin:0 auto; padding:0 24px; display:flex; align-items:center; justify-content:space-between; }
+    .nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+    .nav-logo-dot { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#38bdf8,#0ea5e9); display:flex; align-items:center; justify-content:center; box-shadow:0 0 18px rgba(14,165,233,.45); }
+    .nav-logo-inner { width:12px; height:12px; border-radius:50%; background:rgba(255,255,255,.85); }
+    .nav-logo-text { font-size:1.2rem; font-weight:900; letter-spacing:-.02em; color:#0284c7; }
+    .nav-links { display:flex; align-items:center; gap:32px; }
+    .nav-links a { text-decoration:none; font-size:.875rem; font-weight:500; color:var(--slate-700); transition:color .2s; }
+    .nav-links a:hover { color:var(--sky); }
+    .nav-cta { padding:8px 20px; background:var(--sky); color:#fff; border-radius:999px; font-size:.875rem; font-weight:600; text-decoration:none; box-shadow:0 4px 14px rgba(14,165,233,.35); transition:all .2s; }
+    .nav-cta:hover { background:#0284c7; transform:scale(1.04); }
+    .nav-hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:4px; }
+    .nav-hamburger span { width:22px; height:2px; background:var(--slate-700); border-radius:2px; }
+
+    /* ── HERO ── */
+    #hero {
+      min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+      position:relative; overflow:hidden; padding:100px 24px 60px;
+      background: radial-gradient(ellipse 90% 70% at 50% 15%, #bae6fd 0%, #e0f2fe 35%, #ecfdf5 65%, #fefce8 100%);
+    }
+    .hero-orb {
+      position:absolute; border-radius:50%; pointer-events:none;
+    }
+    .hero-sun {
+      position:absolute; top:60px; right:80px; width:110px; height:110px; border-radius:50%;
+      background:radial-gradient(circle,#fef08a 25%,#fcd34d 55%,rgba(245,158,11,0) 100%);
+      filter:blur(3px);
+      box-shadow:0 0 80px 40px rgba(245,158,11,.22);
+      animation: pulseGlow 5s ease-in-out infinite;
+    }
+    .hero-content { position:relative; z-index:2; text-align:center; max-width:900px; }
+    .hero-badge {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:7px 18px; border-radius:999px; margin-bottom:28px;
+      background:rgba(255,255,255,.7); backdrop-filter:blur(12px);
+      border:1px solid rgba(14,165,233,.25);
+      font-size:.8rem; font-weight:600; color:#0369a1; letter-spacing:.04em;
+      animation: slideUp .7s ease both;
+    }
+    .hero-badge svg { color:var(--sky); }
+    .hero-cig-wrap { margin-bottom:36px; animation: slideUp .7s .1s ease both; }
+    .hero-h1 { font-size:clamp(2.6rem,7vw,5.5rem); font-weight:900; line-height:1.05; letter-spacing:-.03em; margin-bottom:18px; animation: slideUp .7s .25s ease both; }
+    .hero-tagline { font-size:clamp(1.1rem,2.5vw,1.5rem); font-weight:300; color:var(--slate-700); margin-bottom:10px; animation: slideUp .7s .35s ease both; }
+    .hero-sub { font-size:1rem; color:var(--slate-500); max-width:600px; margin:0 auto 40px; line-height:1.7; animation: slideUp .7s .4s ease both; }
+    .hero-sub em { font-style:normal; font-weight:600; color:var(--sky); }
+    .hero-btns { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; animation: slideUp .7s .5s ease both; }
+    .btn-primary {
+      padding:14px 32px; background:var(--sky); color:#fff; border:none; border-radius:999px;
+      font-size:1rem; font-weight:700; cursor:pointer; text-decoration:none;
+      box-shadow:0 8px 28px rgba(14,165,233,.38); transition:all .25s;
+    }
+    .btn-primary:hover { background:#0284c7; transform:scale(1.04); box-shadow:0 12px 36px rgba(14,165,233,.45); }
+    .btn-secondary {
+      padding:14px 32px; background:rgba(255,255,255,.75); color:#0369a1; border:1.5px solid rgba(14,165,233,.3);
+      border-radius:999px; font-size:1rem; font-weight:600; cursor:pointer; text-decoration:none;
+      backdrop-filter:blur(10px); transition:all .25s;
+    }
+    .btn-secondary:hover { background:rgba(255,255,255,.95); border-color:var(--sky); transform:scale(1.04); }
+    .hero-stats { display:flex; gap:48px; justify-content:center; margin-top:52px; animation: slideUp .7s .65s ease both; }
+    .hero-stat-val { font-size:2.4rem; font-weight:900; display:block; }
+    .hero-stat-lbl { font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--slate-500); font-weight:500; }
+    .scroll-arrow { position:absolute; bottom:28px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:6px; color:var(--slate-400); cursor:pointer; animation:float 2.5s ease-in-out infinite; text-decoration:none; }
+    .scroll-arrow span { font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; }
+
+    /* ── CIGARETTE MODEL ── */
+    .cig-wrap { position:relative; display:inline-flex; align-items:center; justify-content:center; }
+    .cig-glow { position:absolute; border-radius:50%; pointer-events:none; }
+    .cig {
+      position:relative; display:flex; align-items:center;
+      filter: drop-shadow(0 8px 32px rgba(14,165,233,.25));
+      animation: float 7s ease-in-out infinite;
+    }
+    .cig-body { height:52px; width:260px; background:linear-gradient(180deg,#fff 0%,#f0f9ff 40%,#e0f2fe 60%,#f8fafc 100%); position:relative; overflow:hidden; }
+    .cig-body::after { content:''; position:absolute; inset:0; background:linear-gradient(180deg,rgba(255,255,255,.85) 0%,rgba(255,255,255,.2) 30%,transparent 60%); }
+    .cig-shimmer { position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,.7),transparent); width:30%; animation:shimmer 3.5s ease-in-out infinite 1.5s; }
+    .cig-band { width:14px; height:52px; background:linear-gradient(180deg,#fcd34d,#f59e0b,#d97706); box-shadow:0 0 14px rgba(245,158,11,.6); }
+    .cig-filter { width:80px; height:52px; background:linear-gradient(180deg,#fed7aa,#fb923c 30%,#ea580c 70%,#c2410c); border-radius:0 26px 26px 0; position:relative; }
+    .cig-tip { width:14px; height:52px; background:linear-gradient(180deg,#e2e8f0,#cbd5e1); border-radius:26px 0 0 26px; }
+    .cig-ember {
+      position:absolute; right:-8px; top:50%; transform:translateY(-50%);
+      width:16px; height:16px; border-radius:50%;
+      background:radial-gradient(circle,#fb923c,#ef4444,transparent);
+      box-shadow:0 0 14px 6px rgba(251,146,60,.75);
+      animation: pulseGlow 1.6s ease-in-out infinite;
+    }
+    .cig-dots { position:absolute; top:50%; display:flex; gap:8px; right:16px; transform:translateY(-50%); }
+    .cig-dot {
+      width:4px; height:4px; border-radius:50%; background:#38bdf8;
+      box-shadow:0 0 8px 3px rgba(56,189,248,.7);
+      animation: blink 2s ease-in-out infinite;
+    }
+    .cig-dot:nth-child(2){ animation-delay:.5s }
+    .cig-dot:nth-child(3){ animation-delay:1s }
+    .cig-smoke { position:absolute; left:-10px; top:50%; transform:translateY(-50%); pointer-events:none; }
+    .cig-smoke span {
+      position:absolute; border-radius:50%;
+      background:rgba(14,165,233,.25); filter:blur(3px);
+      animation: particleRise 2.8s ease-out infinite;
+    }
+    .cig-smoke span:nth-child(1){ width:6px;height:6px; left:0;top:0; animation-delay:0s }
+    .cig-smoke span:nth-child(2){ width:4px;height:4px; left:-6px;top:2px; animation-delay:.8s }
+    .cig-smoke span:nth-child(3){ width:5px;height:5px; left:4px;top:1px; animation-delay:1.7s }
+
+    /* Particles canvas-like via divs */
+    .particles { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+    .particle {
+      position:absolute; border-radius:50%;
+      animation: particleRise linear infinite;
+    }
+
+    /* ── SECTIONS COMMON ── */
+    section { padding:96px 24px; }
+    .section-inner { max-width:1200px; margin:0 auto; }
+    .section-tag {
+      display:inline-block; padding:6px 16px; border-radius:999px;
+      font-size:.75rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; margin-bottom:20px;
+    }
+    .section-h2 { font-size:clamp(2rem,5vw,3.8rem); font-weight:900; letter-spacing:-.03em; margin-bottom:16px; line-height:1.1; }
+    .section-sub { font-size:1.1rem; color:var(--slate-500); max-width:580px; line-height:1.7; }
+
+    /* ── ANATOMY ── */
+    #anatomy { background:linear-gradient(180deg,#f0f9ff 0%,#fff 100%); }
+    .anatomy-header { text-align:center; margin-bottom:72px; }
+    .anatomy-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:28px; }
+    .anatomy-card {
+      border-radius:28px; padding:36px; position:relative; overflow:hidden;
+      box-shadow:0 8px 32px rgba(0,0,0,.06); transition:transform .3s, box-shadow .3s;
+    }
+    .anatomy-card:hover { transform:translateY(-6px); box-shadow:0 20px 50px rgba(0,0,0,.1); }
+    .anatomy-visual { margin-bottom:28px; display:flex; justify-content:center; }
+    .anatomy-badge { display:inline-block; padding:4px 12px; border-radius:999px; font-size:.72rem; font-weight:700; margin-bottom:12px; }
+    .anatomy-title { font-size:1.5rem; font-weight:900; margin-bottom:10px; }
+    .anatomy-desc { font-size:.9rem; color:var(--slate-500); line-height:1.7; margin-bottom:18px; }
+    .anatomy-features { list-style:none; display:flex; flex-direction:column; gap:8px; }
+    .anatomy-features li { display:flex; align-items:center; gap:8px; font-size:.875rem; color:var(--slate-700); }
+    .anatomy-features li::before { content:''; display:block; width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+    /* sky card */
+    .card-sky { background:linear-gradient(135deg,#f0f9ff,#e0f2fe); border:1px solid #bae6fd; }
+    .card-sky .anatomy-badge { background:#e0f2fe; color:#0369a1; }
+    .card-sky .anatomy-title { color:#0369a1; }
+    .card-sky .anatomy-features li::before { background:var(--sky); }
+
+    /* green card */
+    .card-green { background:linear-gradient(135deg,#f0fdf4,#dcfce7); border:1px solid #bbf7d0; }
+    .card-green .anatomy-badge { background:#dcfce7; color:#15803d; }
+    .card-green .anatomy-title { color:#15803d; }
+    .card-green .anatomy-features li::before { background:var(--green); }
+
+    /* gold card */
+    .card-gold { background:linear-gradient(135deg,#fffbeb,#fef3c7); border:1px solid #fde68a; }
+    .card-gold .anatomy-badge { background:#fef3c7; color:#b45309; }
+    .card-gold .anatomy-title { color:#b45309; }
+    .card-gold .anatomy-features li::before { background:var(--gold); }
+
+    /* ── SVG Visuals ── */
+    .vis-ring { fill:none; stroke-width:2; }
+    .vis-dot { }
+
+    /* Smart filter SVG */
+    .sf-outer { animation: spinSlow 20s linear infinite; transform-origin:80px 80px; }
+    .sf-inner { animation: spinReverse 14s linear infinite; transform-origin:80px 80px; }
+    .sf-core { animation: pulseGlow 2.5s ease-in-out infinite; transform-origin:80px 80px; }
+    .sf-particle { animation: pulseDot 2s ease-in-out infinite; }
+
+    /* Metabolic chamber */
+    .mc-heart { animation: heartbeat 1.4s ease-in-out infinite; transform-origin:80px 80px; }
+    .mc-ring  { animation: pulseGlow 1.8s ease-in-out infinite; transform-origin:80px 80px; }
+    .mc-orb   { animation: orbMove 4s ease-in-out infinite; }
+
+    /* Nano-vascular */
+    .nv-path { stroke-dasharray:200; animation: pathDraw 2.2s ease-in-out infinite; }
+
+    /* ── REGENERATION ── */
+    #regeneration { background:linear-gradient(180deg,#fff,#f0fdf4 50%,#f0f9ff 100%); }
+    .regen-header { text-align:center; margin-bottom:72px; }
+    .regen-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:24px; }
+    .regen-card {
+      border-radius:24px; padding:32px; cursor:pointer; user-select:none;
+      box-shadow:0 4px 20px rgba(0,0,0,.05); transition:all .3s;
+      position:relative; overflow:hidden;
+    }
+    .regen-card:hover { transform:translateY(-4px); box-shadow:0 16px 40px rgba(0,0,0,.1); }
+    .regen-step { font-size:.7rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; margin-bottom:16px; }
+    .regen-icon-wrap { width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; margin-bottom:14px; }
+    .regen-icon-wrap svg { width:26px; height:26px; }
+    .regen-title { font-size:1.25rem; font-weight:800; margin-bottom:8px; }
+    .regen-desc { font-size:.875rem; line-height:1.7; color:var(--slate-500); }
+    .regen-visual { margin:20px 0; display:flex; justify-content:center; }
+    .connector { display:none; }
+
+    .card-amber { background:linear-gradient(135deg,#fffbeb,#fef3c7); border:1px solid #fde68a; }
+    .card-amber .regen-step { color:#d97706; }
+    .card-amber .regen-icon-wrap { background:#fef3c7; color:#d97706; }
+    .card-amber .regen-title { color:#92400e; }
+
+    .card-blue { background:linear-gradient(135deg,#eff6ff,#dbeafe); border:1px solid #bfdbfe; }
+    .card-blue .regen-step { color:#2563eb; }
+    .card-blue .regen-icon-wrap { background:#dbeafe; color:#2563eb; }
+    .card-blue .regen-title { color:#1e3a8a; }
+
+    .card-sky { background:linear-gradient(135deg,#f0f9ff,#e0f2fe); border:1px solid #bae6fd; }
+    .card-sky .regen-step { color:#0284c7; }
+    .card-sky .regen-icon-wrap { background:#e0f2fe; color:#0284c7; }
+    .card-sky .regen-title { color:#0c4a6e; }
+
+    .card-emerald { background:linear-gradient(135deg,#f0fdf4,#dcfce7); border:1px solid #bbf7d0; }
+    .card-emerald .regen-step { color:#16a34a; }
+    .card-emerald .regen-icon-wrap { background:#dcfce7; color:#16a34a; }
+    .card-emerald .regen-title { color:#14532d; }
+
+    /* Solar visual */
+    .sol-ray { transform-origin:64px 64px; animation: rayPulse 2s ease-in-out infinite; }
+    .sol-ray:nth-child(1){ --a:0deg; animation-delay:0s }
+    .sol-ray:nth-child(2){ --a:45deg; animation-delay:.25s }
+    .sol-ray:nth-child(3){ --a:90deg; animation-delay:.5s }
+    .sol-ray:nth-child(4){ --a:135deg; animation-delay:.75s }
+    .sol-ray:nth-child(5){ --a:180deg; animation-delay:1s }
+    .sol-ray:nth-child(6){ --a:225deg; animation-delay:1.25s }
+    .sol-ray:nth-child(7){ --a:270deg; animation-delay:1.5s }
+    .sol-ray:nth-child(8){ --a:315deg; animation-delay:1.75s }
+    .sol-core { animation: pulseGlow 2s ease-in-out infinite; transform-origin:64px 64px; }
+
+    /* AI visual */
+    .ai-scan { position:relative; width:120px; height:100px; margin:0 auto; }
+    .ai-scan-bg { width:100%; height:100%; border:1px solid rgba(59,130,246,.3); border-radius:8px; position:relative; overflow:hidden; }
+    .ai-scan-line { position:absolute; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,rgba(59,130,246,.9),transparent); box-shadow:0 0 10px rgba(59,130,246,.8); animation: scanLine 2.5s ease-in-out infinite; }
+    .ai-scan-grid { position:absolute; inset:0; }
+    .ai-scan-grid::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 11px,rgba(59,130,246,.08) 12px); }
+    .ai-dot { position:absolute; width:8px; height:8px; border-radius:50%; }
+    .ai-dot-ok  { background:rgba(34,197,94,.9); box-shadow:0 0 6px rgba(34,197,94,.7); animation:pulseDot 1.8s infinite; }
+    .ai-dot-err { background:rgba(239,68,68,.9); box-shadow:0 0 6px rgba(239,68,68,.7); animation:pulseDot 1.5s infinite .3s; }
+    .ai-cpu { position:absolute; width:28px; height:28px; border:2px solid rgba(59,130,246,.7); border-radius:6px; background:rgba(59,130,246,.12); box-shadow:0 0 12px rgba(59,130,246,.4); top:50%; left:50%; transform:translate(-50%,-50%); display:flex; align-items:center; justify-content:center; }
+    .ai-cpu-dot { width:8px; height:8px; border-radius:50%; background:var(--sky); }
+
+    /* Distribution visual */
+    .dist-path { stroke-dasharray:100; animation: pathDraw 2s ease-in-out infinite; }
+    .dist-node { animation: pulseDot 2s ease-in-out infinite; }
+    .dist-pulse { animation: pulseDot 1.5s ease-in-out infinite; }
+
+    /* Regeneration visual */
+    .reg-bloom { animation: heartbeat 3s ease-in-out infinite; transform-origin:60px 60px; }
+    .reg-particle { animation: particleRise ease-out infinite; }
+
+    /* ── BENEFITS ── */
+    #benefits { background:linear-gradient(180deg,#fff7ed,#fff 40%,#f0fdf4 100%); }
+    .benefits-header { text-align:center; margin-bottom:72px; }
+    .benefits-grid { display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:start; }
+    .problem-card {
+      border-radius:28px; padding:40px; border:1px solid #fecaca;
+      background:linear-gradient(135deg,#fff5f5,#fff7ed);
+      box-shadow:0 8px 32px rgba(239,68,68,.07);
+    }
+    .problem-title { font-size:1.5rem; font-weight:900; color:#dc2626; margin-bottom:28px; }
+    .problem-stats { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:28px; }
+    .stat-item { text-align:center; }
+    .stat-num { font-size:2.2rem; font-weight:900; color:#dc2626; display:block; }
+    .stat-lbl { font-size:.75rem; color:var(--slate-500); line-height:1.5; margin-top:4px; }
+    .problem-facts { list-style:none; display:flex; flex-direction:column; gap:10px; }
+    .problem-facts li { display:flex; align-items:flex-start; gap:10px; font-size:.875rem; color:var(--slate-600); line-height:1.5; }
+    .fact-dot { width:20px; height:20px; border-radius:50%; background:#fee2e2; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+    .fact-dot::after { content:''; width:7px; height:7px; border-radius:50%; background:#ef4444; display:block; }
+    .solution-intro { font-size:1rem; color:var(--slate-500); line-height:1.7; margin-bottom:24px; }
+    .benefit-card {
+      border-radius:20px; padding:24px; margin-bottom:16px; position:relative; overflow:hidden;
+      box-shadow:0 4px 16px rgba(0,0,0,.05); transition:transform .25s;
+    }
+    .benefit-card:hover { transform:translateX(4px); }
+    .benefit-card-inner { display:flex; align-items:flex-start; gap:16px; }
+    .benefit-icon { width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .benefit-icon svg { width:24px; height:24px; }
+    .benefit-title { font-size:1rem; font-weight:700; margin-bottom:4px; }
+    .benefit-desc { font-size:.85rem; color:var(--slate-500); line-height:1.6; }
+    .impact-banner {
+      margin-top:56px; padding:48px 40px; border-radius:32px; text-align:center;
+      background:linear-gradient(135deg,#0ea5e9,#22c55e);
+      box-shadow:0 24px 60px rgba(14,165,233,.28);
+    }
+    .impact-banner h3 { font-size:clamp(1.5rem,3.5vw,2.2rem); font-weight:900; color:#fff; margin-bottom:12px; }
+    .impact-banner p { font-size:1rem; color:rgba(255,255,255,.85); max-width:520px; margin:0 auto; }
+
+    /* ── PURCHASE ── */
+    #purchase {
+      min-height:100vh;
+      background:radial-gradient(ellipse 80% 60% at 50% 15%,#bae6fd 0%,#e0f2fe 30%,#ecfdf5 65%,#fefce8 100%);
+      position:relative; overflow:hidden;
+    }
+    .purchase-sun { position:absolute; top:48px; right:72px; width:100px; height:100px; border-radius:50%; background:radial-gradient(circle,#fef08a 25%,#fcd34d 55%,rgba(245,158,11,0) 100%); filter:blur(3px); box-shadow:0 0 70px 35px rgba(245,158,11,.2); animation:pulseGlow 5s ease-in-out infinite; }
+    .purchase-inner { max-width:1100px; margin:0 auto; position:relative; z-index:2; }
+    .purchase-header { text-align:center; margin-bottom:64px; }
+    .purchase-grid { display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center; }
+    .purchase-product { display:flex; flex-direction:column; align-items:center; gap:28px; }
+    .purchase-price { text-align:center; }
+    .purchase-price-main { font-size:3.5rem; font-weight:900; color:var(--slate-900); }
+    .purchase-price-sub { font-size:.85rem; color:var(--slate-400); margin-top:4px; }
+    .purchase-savings { text-align:left; }
+    .purchase-savings-main { font-size:.9rem; font-weight:600; color:#16a34a; }
+    .purchase-savings-sub { font-size:.78rem; color:var(--slate-500); }
+    .purchase-price-row { display:flex; align-items:center; gap:28px; }
+    .purchase-card {
+      border-radius:28px; padding:36px;
+      background:rgba(255,255,255,.8); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+      border:1px solid rgba(255,255,255,.6);
+      box-shadow:0 24px 60px rgba(14,165,233,.12);
+    }
+    .specs-table { margin-bottom:32px; }
+    .spec-row { display:flex; justify-content:space-between; font-size:.875rem; padding-bottom:12px; margin-bottom:12px; border-bottom:1px solid rgba(0,0,0,.06); }
+    .spec-row:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
+    .spec-label { color:var(--slate-500); }
+    .spec-value { font-weight:700; color:var(--slate-900); }
+    .btn-cart {
+      width:100%; padding:16px; border:none; border-radius:18px; font-size:1.05rem; font-weight:700; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:12px;
+      background:var(--sky); color:#fff; box-shadow:0 8px 24px rgba(14,165,233,.35);
+      transition:all .25s;
+    }
+    .btn-cart:hover { background:#0284c7; transform:scale(1.02); }
+    .btn-cart.added { background:#16a34a; box-shadow:0 8px 24px rgba(22,163,74,.35); }
+    .btn-order {
+      width:100%; padding:16px; border:none; border-radius:18px; font-size:1.05rem; font-weight:700; cursor:pointer;
+      background:linear-gradient(135deg,#f59e0b,#ea580c); color:#fff;
+      box-shadow:0 8px 24px rgba(245,158,11,.35); transition:all .25s; margin-bottom:24px;
+    }
+    .btn-order:hover { transform:scale(1.02); box-shadow:0 12px 32px rgba(245,158,11,.45); }
+    .trust-badges { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+    .trust-badge { text-align:center; padding:12px 8px; border-radius:14px; background:var(--slate-100); border:1px solid rgba(0,0,0,.06); }
+    .trust-badge svg { width:20px; height:20px; margin:0 auto 4px; display:block; }
+    .trust-badge-lbl { font-size:.72rem; font-weight:700; color:var(--slate-700); }
+    .trust-badge-sub { font-size:.65rem; color:var(--slate-400); }
+
+    /* ── FOOTER ── */
+    footer { background:#0f172a; padding:48px 24px; }
+    .footer-inner { max-width:1280px; margin:0 auto; display:flex; flex-direction:column; align-items:center; gap:24px; }
+    .footer-top { width:100%; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px; }
+    .footer-logo { display:flex; align-items:center; gap:10px; }
+    .footer-logo-dot { width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,#38bdf8,#0ea5e9); display:flex; align-items:center; justify-content:center; }
+    .footer-logo-dot::after { content:''; width:10px; height:10px; border-radius:50%; background:rgba(255,255,255,.8); display:block; }
+    .footer-logo-name { color:#fff; font-size:1.1rem; font-weight:900; letter-spacing:-.01em; }
+    .footer-links { display:flex; gap:28px; }
+    .footer-links a { color:#94a3b8; font-size:.85rem; text-decoration:none; transition:color .2s; }
+    .footer-links a:hover { color:var(--sky-light); }
+    .footer-copy { color:#475569; font-size:.8rem; }
+    .footer-divider { width:100%; height:1px; background:#1e293b; }
+    .footer-disclaimer { color:#475569; font-size:.75rem; text-align:center; max-width:640px; line-height:1.6; }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width: 900px) {
+      .benefits-grid, .purchase-grid { grid-template-columns:1fr; }
+      .nav-links, .nav-cta { display:none; }
+      .nav-hamburger { display:flex; }
+      .hero-stats { gap:28px; }
+    }
+    @media(max-width:600px) {
+      .anatomy-grid { grid-template-columns:1fr; }
+      .regen-grid { grid-template-columns:1fr; }
+      .cig-body { width:160px; }
+      .cig-filter { width:52px; }
+      .problem-stats { grid-template-columns:1fr 1fr; }
+      .trust-badges { grid-template-columns:1fr 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="#hero" class="nav-logo">
+      <div class="nav-logo-dot"><div class="nav-logo-inner"></div></div>
+      <span class="nav-logo-text">INFINICIG</span>
+    </a>
+    <div class="nav-links">
+      <a href="#hero">Concept</a>
+      <a href="#anatomy">Technologie</a>
+      <a href="#regeneration">Régénération</a>
+      <a href="#benefits">Bénéfices</a>
+      <a href="#purchase" class="nav-cta">Commander</a>
+    </div>
+    <div class="nav-hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section id="hero">
+  <!-- Particles -->
+  <div class="particles" id="particles"></div>
+
+  <!-- Sun -->
+  <div class="hero-sun"></div>
+
+  <!-- Atmospheric glows -->
+  <div class="hero-orb" style="width:600px;height:600px;top:-200px;left:-200px;background:radial-gradient(circle,rgba(14,165,233,.12),transparent 70%);filter:blur(40px);animation:pulseGlow 8s ease-in-out infinite;"></div>
+  <div class="hero-orb" style="width:500px;height:500px;bottom:-100px;right:-100px;background:radial-gradient(circle,rgba(34,197,94,.1),transparent 70%);filter:blur(40px);animation:pulseGlow 6s ease-in-out infinite 2s;"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M5 17l.8 2.4L8 21l-2.2.8L5 24l-.8-2.2L2 21l2.2-.8L5 17z"/></svg>
+      Technologie Révolutionnaire · Brevet en Cours
+    </div>
+
+    <!-- Cigarette Model -->
+    <div class="hero-cig-wrap">
+      <div class="cig-wrap">
+        <!-- Glow -->
+        <div class="cig-glow" style="width:500px;height:120px;background:radial-gradient(ellipse,rgba(14,165,233,.18),transparent 70%);filter:blur(20px);transform:translateY(20px);"></div>
+        <div class="cig" id="cigRotate">
+          <div class="cig-smoke">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="cig-tip"></div>
+          <div class="cig-body">
+            <div class="cig-shimmer"></div>
+          </div>
+          <div class="cig-band"></div>
+          <div class="cig-filter">
+            <div class="cig-dots">
+              <div class="cig-dot"></div>
+              <div class="cig-dot"></div>
+              <div class="cig-dot"></div>
+            </div>
+            <div class="cig-ember"></div>
+          </div>
+        </div>
+        <!-- Lens flare -->
+        <div style="position:absolute;top:-8px;left:38%;width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 24px 12px rgba(255,255,255,.9),0 0 60px 28px rgba(56,189,248,.4);animation:pulseGlow 3s ease-in-out infinite;pointer-events:none;"></div>
+      </div>
+    </div>
+
+    <h1 class="hero-h1">
+      <span style="color:var(--slate-900)">Infinicig</span><br>
+      <span class="text-gradient">Ne S'Épuise Jamais.</span>
+    </h1>
+    <p class="hero-tagline">La Première Cigarette Activement Régénérante</p>
+    <p class="hero-sub">
+      Nous passons d'une logique de consommation jetable à un <em>cycle biologique durable</em>.<br>
+      Propulsée par le soleil, guidée par l'IA, conçue pour l'éternité.
+    </p>
+    <div class="hero-btns">
+      <a href="#anatomy" class="btn-primary">Découvrir la Technologie →</a>
+      <a href="#purchase" class="btn-secondary">Commander · €1 000</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <span class="hero-stat-val text-gradient">∞</span>
+        <span class="hero-stat-lbl">Régénérations</span>
+      </div>
+      <div>
+        <span class="hero-stat-val text-gradient">0</span>
+        <span class="hero-stat-lbl">Déchet</span>
+      </div>
+      <div>
+        <span class="hero-stat-val text-gradient">IA</span>
+        <span class="hero-stat-lbl">Embarquée</span>
+      </div>
+    </div>
+  </div>
+
+  <a href="#anatomy" class="scroll-arrow">
+    <span>Explorer</span>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+  </a>
+</section>
+
+<!-- ═══════════════ ANATOMY ═══════════════ -->
+<section id="anatomy">
+  <div class="section-inner">
+    <div class="anatomy-header reveal">
+      <div class="section-tag" style="background:#e0f2fe;color:#0369a1;">Ingénierie Interne</div>
+      <h2 class="section-h2">L'Anatomie du <span class="text-gradient">Système</span></h2>
+      <p class="section-sub" style="margin:0 auto;">Trois systèmes bio-synthétiques imbriqués, travaillant en harmonie pour créer une expérience perpétuellement renouvelée.</p>
+    </div>
+
+    <div class="anatomy-grid">
+
+      <!-- Smart Filter -->
+      <div class="anatomy-card card-sky reveal" style="transition-delay:.05s">
+        <div class="anatomy-visual">
+          <svg width="160" height="160" viewBox="0 0 160 160">
+            <circle class="sf-outer vis-ring" cx="80" cy="80" r="70" stroke="#bae6fd" stroke-dasharray="6 4"/>
+            <circle class="sf-inner vis-ring" cx="80" cy="80" r="54" stroke="#7dd3fc" stroke-dasharray="4 6"/>
+            <circle class="sf-core" cx="80" cy="80" r="30" fill="rgba(14,165,233,.15)" stroke="#38bdf8" stroke-width="2"/>
+            <circle cx="80" cy="80" r="16" fill="url(#skyGrad)"/>
+            <circle cx="80" cy="80" r="6" fill="#fff" opacity=".9"/>
+            <!-- orbit dots -->
+            <circle class="sf-particle vis-dot" cx="80" cy="10" r="4" fill="#38bdf8" style="animation-delay:0s"/>
+            <circle class="sf-particle vis-dot" cx="148" cy="46" r="3" fill="#38bdf8" style="animation-delay:.4s"/>
+            <circle class="sf-particle vis-dot" cx="148" cy="114" r="4" fill="#38bdf8" style="animation-delay:.8s"/>
+            <circle class="sf-particle vis-dot" cx="80" cy="150" r="3" fill="#38bdf8" style="animation-delay:1.2s"/>
+            <circle class="sf-particle vis-dot" cx="12" cy="114" r="4" fill="#38bdf8" style="animation-delay:1.6s"/>
+            <circle class="sf-particle vis-dot" cx="12" cy="46" r="3" fill="#38bdf8" style="animation-delay:2s"/>
+            <defs>
+              <radialGradient id="skyGrad"><stop offset="0%" stop-color="#38bdf8"/><stop offset="100%" stop-color="#0ea5e9"/></radialGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="anatomy-badge">Barrière Intelligente</div>
+        <div class="anatomy-title">Filtre Intelligent</div>
+        <div class="anatomy-desc">Système de filtration avancé construit à partir de nano-matériaux auto-régénérants. La première barrière intelligente entre le monde extérieur et le moteur biologique interne.</div>
+        <ul class="anatomy-features">
+          <li>Filtration nano-mesh multicouches</li>
+          <li>Matériaux auto-régénérants</li>
+          <li>Durée de vie virtuellement illimitée</li>
+          <li>Préservation de la qualité d'expérience</li>
+        </ul>
+      </div>
+
+      <!-- Metabolic Chamber -->
+      <div class="anatomy-card card-green reveal" style="transition-delay:.15s">
+        <div class="anatomy-visual">
+          <svg width="160" height="160" viewBox="0 0 160 160">
+            <!-- outer glow ring -->
+            <circle class="mc-ring" cx="80" cy="80" r="68" fill="rgba(34,197,94,.06)" stroke="#86efac" stroke-width="1.5"/>
+            <!-- inner pulse -->
+            <circle class="mc-heart" cx="80" cy="80" r="46" fill="url(#greenGrad)" opacity=".9"/>
+            <circle cx="80" cy="80" r="26" fill="url(#greenGrad2)"/>
+            <!-- energy lines -->
+            <line x1="80" y1="80" x2="80" y2="20" stroke="rgba(74,222,128,.6)" stroke-width="2" stroke-dasharray="4 3">
+              <animate attributeName="opacity" values="0;1;0" dur="1.8s" repeatCount="indefinite"/>
+            </line>
+            <line x1="80" y1="80" x2="136" y2="50" stroke="rgba(74,222,128,.5)" stroke-width="2" stroke-dasharray="4 3">
+              <animate attributeName="opacity" values="0;1;0" dur="1.8s" begin=".3s" repeatCount="indefinite"/>
+            </line>
+            <line x1="80" y1="80" x2="136" y2="110" stroke="rgba(74,222,128,.5)" stroke-width="2" stroke-dasharray="4 3">
+              <animate attributeName="opacity" values="0;1;0" dur="1.8s" begin=".6s" repeatCount="indefinite"/>
+            </line>
+            <line x1="80" y1="80" x2="80" y2="140" stroke="rgba(74,222,128,.6)" stroke-width="2" stroke-dasharray="4 3">
+              <animate attributeName="opacity" values="0;1;0" dur="1.8s" begin=".9s" repeatCount="indefinite"/>
+            </line>
+            <line x1="80" y1="80" x2="24" y2="110" stroke="rgba(74,222,128,.5)" stroke-width="2" stroke-dasharray="4 3">
+              <animate attributeName="opacity" values="0;1;0" dur="1.8s" begin="1.2s" repeatCount="indefinite"/>
+            </line>
+            <!-- solar orb -->
+            <circle class="mc-orb" cx="80" cy="32" r="7" fill="#fcd34d" opacity=".9" style="box-shadow:0 0 10px rgba(252,211,77,.8)">
+              <animate attributeName="opacity" values=".4;1;.4" dur="3s" repeatCount="indefinite"/>
+            </circle>
+            <defs>
+              <radialGradient id="greenGrad"><stop offset="0%" stop-color="#4ade80"/><stop offset="100%" stop-color="#22c55e"/></radialGradient>
+              <radialGradient id="greenGrad2"><stop offset="0%" stop-color="#86efac"/><stop offset="100%" stop-color="#4ade80"/></radialGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="anatomy-badge">Réacteur Principal</div>
+        <div class="anatomy-title">Chambre Métabolique</div>
+        <div class="anatomy-desc">Le cœur battant d'Infinicig. Ce bio-réacteur central convertit l'énergie solaire captée en ressources précises nécessaires pour soutenir, régénérer et optimiser l'ensemble du système.</div>
+        <ul class="anatomy-features">
+          <li>Conversion d'énergie solaire</li>
+          <li>Traitement bio-réactif</li>
+          <li>Auto-optimisation continue</li>
+          <li>Noyau de photosynthèse artificielle</li>
+        </ul>
+      </div>
+
+      <!-- Nano-Vascular -->
+      <div class="anatomy-card card-gold reveal" style="transition-delay:.25s">
+        <div class="anatomy-visual">
+          <svg width="160" height="160" viewBox="0 0 160 160">
+            <defs>
+              <radialGradient id="goldGrad"><stop offset="0%" stop-color="#fcd34d"/><stop offset="100%" stop-color="#f59e0b"/></radialGradient>
+            </defs>
+            <!-- paths -->
+            <path class="nv-path" d="M80 80 L28 28" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" style="animation-delay:0s"/>
+            <path class="nv-path" d="M80 80 L132 28" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" style="animation-delay:.25s"/>
+            <path class="nv-path" d="M80 80 L18 80" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" style="animation-delay:.5s"/>
+            <path class="nv-path" d="M80 80 L142 80" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" style="animation-delay:.75s"/>
+            <path class="nv-path" d="M80 80 L28 132" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" style="animation-delay:1s"/>
+            <path class="nv-path" d="M80 80 L132 132" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" style="animation-delay:1.25s"/>
+            <path class="nv-path" d="M80 80 L80 18" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" style="animation-delay:1.5s"/>
+            <path class="nv-path" d="M80 80 L80 142" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" style="animation-delay:1.75s"/>
+            <!-- end nodes -->
+            <circle cx="28"  cy="28"  r="5" fill="#fcd34d"><animate attributeName="r" values="4;7;4" dur="2s" repeatCount="indefinite" begin="0s"/></circle>
+            <circle cx="132" cy="28"  r="5" fill="#fcd34d"><animate attributeName="r" values="4;7;4" dur="2s" repeatCount="indefinite" begin=".3s"/></circle>
+            <circle cx="18"  cy="80"  r="5" fill="#fcd34d"><animate attributeName="r" values="4;7;4" dur="2s" repeatCount="indefinite" begin=".6s"/></circle>
+            <circle cx="142" cy="80"  r="5" fill="#fcd34d"><animate attributeName="r" values="4;7;4" dur="2s" repeatCount="indefinite" begin=".9s"/></circle>
+            <circle cx="28"  cy="132" r="5" fill="#fcd34d"><animate attributeName="r" values="4;7;4" dur="2s" repeatCount="indefinite" begin="1.2s"/></circle>
+            <circle cx="132" cy="132" r="5" fill="#fcd34d"><animate attributeName="r" values="4;7;4" dur="2s" repeatCount="indefinite" begin="1.5s"/></circle>
+            <!-- center -->
+            <circle cx="80" cy="80" r="14" fill="url(#goldGrad)"/>
+            <circle cx="80" cy="80" r="6" fill="#fff" opacity=".8"/>
+          </svg>
+        </div>
+        <div class="anatomy-badge">Matrice Réparatrice</div>
+        <div class="anatomy-title">Réseau Nano-Vasculaire</div>
+        <div class="anatomy-desc">Un réseau vivant de nano-canaux intelligents traversant toute la structure. Distribue l'énergie avec précision, détecte les zones dégradées en temps réel et envoie les ressources de réparation.</div>
+        <ul class="anatomy-features">
+          <li>Distribution d'énergie en temps réel</li>
+          <li>Détection intelligente des dommages</li>
+          <li>Dispatch autonome de réparation</li>
+          <li>Topologie de réseau adaptative</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ REGENERATION ═══════════════ -->
+<section id="regeneration">
+  <div class="section-inner">
+    <div class="regen-header reveal">
+      <div class="section-tag" style="background:#dcfce7;color:#15803d;">Renouvellement Perpétuel</div>
+      <h2 class="section-h2">Comment Infinicig <span class="text-gradient">Se Reconstruit ?</span></h2>
+      <p class="section-sub" style="margin:0 auto;">Un cycle bio-synthétique en 4 étapes qui fonctionne en continu — chaque seconde, sans interruption.</p>
+    </div>
+
+    <div class="regen-grid">
+
+      <!-- Step 1 Solar -->
+      <div class="regen-card card-amber reveal" style="transition-delay:.05s">
+        <div class="regen-step" style="color:#d97706;">Étape 01</div>
+        <div class="regen-visual">
+          <svg width="120" height="120" viewBox="0 0 128 128">
+            <!-- rays -->
+            <rect class="sol-ray" x="62" y="8" width="4" height="28" rx="2" fill="#fcd34d" style="--a:0deg"/>
+            <rect class="sol-ray" x="62" y="8" width="4" height="28" rx="2" fill="#fcd34d" style="--a:45deg"/>
+            <rect class="sol-ray" x="62" y="8" width="4" height="28" rx="2" fill="#fcd34d" style="--a:90deg"/>
+            <rect class="sol-ray" x="62" y="8" width="4" height="28" rx="2" fill="#fcd34d" style="--a:135deg"/>
+            <rect class="sol-ray" x="62" y="8" width="4" height="28" rx="2" fill="#fcd34d" style="--a:180deg"/>
+            <rect class="sol-ray" x="62" y="8" width="4" height="28" rx="2" fill="#fcd34d" style="--a:225deg"/>
+            <rect class="sol-ray" x="62" y="8" width="4" height="28" rx="2" fill="#fcd34d" style="--a:270deg"/>
+            <rect class="sol-ray" x="62" y="8" width="4" height="28" rx="2" fill="#fcd34d" style="--a:315deg"/>
+            <!-- core -->
+            <circle class="sol-core" cx="64" cy="64" r="26" fill="url(#goldGradR)"/>
+            <circle cx="64" cy="64" r="14" fill="#fef08a"/>
+            <defs><radialGradient id="goldGradR"><stop offset="0%" stop-color="#fef08a"/><stop offset="100%" stop-color="#f59e0b"/></radialGradient></defs>
+            <!-- energy flowing down -->
+            <line x1="64" y1="90" x2="64" y2="120" stroke="rgba(56,189,248,.5)" stroke-width="2.5" stroke-linecap="round">
+              <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite"/>
+              <animate attributeName="y2" values="90;120;90" dur="1.5s" repeatCount="indefinite"/>
+            </line>
+          </svg>
+        </div>
+        <div class="regen-icon-wrap" style="background:#fef3c7;color:#d97706;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </div>
+        <div class="regen-title" style="color:#92400e;">Captation Solaire</div>
+        <div class="regen-desc">Les cellules photovoltaïques nano-métriques captent la lumière ambiante et le rayonnement UV. La moindre lumière fluorescente suffit à déclencher un cycle de régénération de 30 minutes.</div>
+      </div>
+
+      <!-- Step 2 AI -->
+      <div class="regen-card card-blue reveal" style="transition-delay:.15s">
+        <div class="regen-step" style="color:#2563eb;">Étape 02</div>
+        <div class="regen-visual">
+          <div class="ai-scan">
+            <div class="ai-scan-bg">
+              <div class="ai-scan-grid"></div>
+              <div class="ai-scan-line"></div>
+              <div class="ai-dot ai-dot-ok"  style="top:20%;left:15%"></div>
+              <div class="ai-dot ai-dot-err" style="top:55%;left:60%"></div>
+              <div class="ai-dot ai-dot-ok"  style="top:75%;left:25%"></div>
+              <div class="ai-dot ai-dot-err" style="top:30%;left:78%"></div>
+              <div class="ai-cpu"><div class="ai-cpu-dot"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="regen-icon-wrap" style="background:#dbeafe;color:#2563eb;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <div class="regen-title" style="color:#1e3a8a;">Analyse IA</div>
+        <div class="regen-desc">Le processeur neuronal embarqué analyse la dégradation du tabac à 10 000 échantillons par seconde, identifiant les zones épuisées et les voies de régénération optimales.</div>
+      </div>
+
+      <!-- Step 3 Distribution -->
+      <div class="regen-card card-sky reveal" style="transition-delay:.25s">
+        <div class="regen-step" style="color:#0284c7;">Étape 03</div>
+        <div class="regen-visual">
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <line x1="60" y1="60" x2="16" y2="16" stroke="rgba(14,165,233,.25)" stroke-width="1.5"/>
+            <line x1="60" y1="60" x2="104" y2="16" stroke="rgba(14,165,233,.25)" stroke-width="1.5"/>
+            <line x1="60" y1="60" x2="16" y2="104" stroke="rgba(14,165,233,.25)" stroke-width="1.5"/>
+            <line x1="60" y1="60" x2="104" y2="104" stroke="rgba(14,165,233,.25)" stroke-width="1.5"/>
+            <line x1="60" y1="60" x2="60" y2="12" stroke="rgba(14,165,233,.25)" stroke-width="1.5"/>
+            <line x1="60" y1="60" x2="108" y2="60" stroke="rgba(14,165,233,.25)" stroke-width="1.5"/>
+            <line x1="60" y1="60" x2="60" y2="108" stroke="rgba(14,165,233,.25)" stroke-width="1.5"/>
+            <line x1="60" y1="60" x2="12" y2="60" stroke="rgba(14,165,233,.25)" stroke-width="1.5"/>
+            <!-- animated pulses -->
+            <circle r="4" fill="#38bdf8"><animateMotion path="M60,60 L16,16" dur="1.2s" repeatCount="indefinite" begin="0s"/><animate attributeName="opacity" values="0;1;0" dur="1.2s" repeatCount="indefinite" begin="0s"/></circle>
+            <circle r="4" fill="#38bdf8"><animateMotion path="M60,60 L104,16" dur="1.2s" repeatCount="indefinite" begin=".3s"/><animate attributeName="opacity" values="0;1;0" dur="1.2s" repeatCount="indefinite" begin=".3s"/></circle>
+            <circle r="4" fill="#38bdf8"><animateMotion path="M60,60 L16,104" dur="1.2s" repeatCount="indefinite" begin=".6s"/><animate attributeName="opacity" values="0;1;0" dur="1.2s" repeatCount="indefinite" begin=".6s"/></circle>
+            <circle r="4" fill="#38bdf8"><animateMotion path="M60,60 L104,104" dur="1.2s" repeatCount="indefinite" begin=".9s"/><animate attributeName="opacity" values="0;1;0" dur="1.2s" repeatCount="indefinite" begin=".9s"/></circle>
+            <!-- end nodes -->
+            <circle cx="16" cy="16" r="5" fill="#38bdf8"><animate attributeName="r" values="4;7;4" dur="2s" repeatCount="indefinite" begin="0s"/></circle>
+            <circle cx="104" cy="16" r="5" fill="#38bdf8"><animate attributeName="r" values="4;7;4" dur="2s" repeatCount="indefinite" begin=".4s"/></circle>
+            <circle cx="16" cy="104" r="5" fill="#38bdf8"><animate attributeName="r" values="4;7;4" dur="2s" repeatCount="indefinite" begin=".8s"/></circle>
+            <circle cx="104" cy="104" r="5" fill="#38bdf8"><animate attributeName="r" values="4;7;4" dur="2s" repeatCount="indefinite" begin="1.2s"/></circle>
+            <!-- center -->
+            <circle cx="60" cy="60" r="12" fill="rgba(14,165,233,.15)" stroke="#0ea5e9" stroke-width="2"><animate attributeName="r" values="12;16;12" dur="2s" repeatCount="indefinite"/></circle>
+            <circle cx="60" cy="60" r="5" fill="#0ea5e9"/>
+          </svg>
+        </div>
+        <div class="regen-icon-wrap" style="background:#e0f2fe;color:#0284c7;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+        </div>
+        <div class="regen-title" style="color:#0c4a6e;">Distribution</div>
+        <div class="regen-desc">Des impulsions lumineuses traversent le réseau nano-vasculaire à vitesse quasi-instantanée. Les paquets d'énergie ciblés sont acheminés vers chaque zone endommagée avec une précision chirurgicale.</div>
+      </div>
+
+      <!-- Step 4 Regeneration -->
+      <div class="regen-card card-emerald reveal" style="transition-delay:.35s">
+        <div class="regen-step" style="color:#16a34a;">Étape 04</div>
+        <div class="regen-visual">
+          <div style="position:relative;width:120px;height:120px;margin:0 auto;overflow:hidden;">
+            <!-- particles -->
+            <div style="position:absolute;top:50%;left:50%;width:8px;height:8px;margin:-4px;border-radius:50%;background:#4ade80;animation:particleRise 2s ease-out infinite 0s;transform-origin:center bottom;"></div>
+            <div style="position:absolute;top:50%;left:calc(50% + 20px);width:6px;height:6px;margin:-3px;border-radius:50%;background:#22c55e;animation:particleRise 2.2s ease-out infinite .3s;"></div>
+            <div style="position:absolute;top:50%;left:calc(50% - 22px);width:7px;height:7px;margin:-3.5px;border-radius:50%;background:#4ade80;animation:particleRise 1.8s ease-out infinite .6s;"></div>
+            <div style="position:absolute;top:50%;left:calc(50% + 34px);width:5px;height:5px;margin:-2.5px;border-radius:50%;background:#86efac;animation:particleRise 2.4s ease-out infinite .2s;"></div>
+            <div style="position:absolute;top:50%;left:calc(50% - 30px);width:6px;height:6px;margin:-3px;border-radius:50%;background:#4ade80;animation:particleRise 2s ease-out infinite .9s;"></div>
+            <!-- sun beam from top -->
+            <div style="position:absolute;top:0;left:50%;width:3px;height:50%;transform:translateX(-50%);background:linear-gradient(180deg,rgba(252,211,77,.8),transparent);animation:pulseGlow 2.5s ease-in-out infinite;"></div>
+            <!-- bloom -->
+            <svg style="position:absolute;inset:0;" width="120" height="120" viewBox="0 0 120 120">
+              <circle class="reg-bloom" cx="60" cy="60" r="36" fill="url(#regGrad)" opacity=".9"/>
+              <circle cx="60" cy="60" r="20" fill="url(#regGrad2)"/>
+              <defs>
+                <radialGradient id="regGrad"><stop offset="0%" stop-color="rgba(74,222,128,.6)"/><stop offset="100%" stop-color="rgba(34,197,94,.2)"/></radialGradient>
+                <radialGradient id="regGrad2"><stop offset="0%" stop-color="#86efac"/><stop offset="100%" stop-color="#22c55e"/></radialGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
+        <div class="regen-icon-wrap" style="background:#dcfce7;color:#16a34a;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="regen-title" style="color:#14532d;">Régénération</div>
+        <div class="regen-desc">La photosynthèse artificielle reconstruit les cellules dégradées organiquement. Les zones endommagées sont progressivement reconstruites molécule par molécule à partir de la lumière captée.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ BENEFITS ═══════════════ -->
+<section id="benefits">
+  <div class="section-inner">
+    <div class="benefits-header reveal">
+      <div class="section-tag" style="background:#fee2e2;color:#dc2626;">Pourquoi Changer</div>
+      <h2 class="section-h2">Le <span style="color:#dc2626;">Problème</span> &amp; la <span class="text-gradient">Solution</span></h2>
+    </div>
+
+    <div class="benefits-grid">
+
+      <!-- Problem -->
+      <div class="problem-card reveal-left">
+        <div class="problem-title">Le Problème</div>
+        <div class="problem-stats">
+          <div class="stat-item">
+            <span class="stat-num" data-target="500" data-suffix="L">0L</span>
+            <div class="stat-lbl">Litres d'eau contaminés par mégot</div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num" data-target="4500" data-suffix="ans">0ans</span>
+            <div class="stat-lbl">Pour biodégrader un filtre synthétique</div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num" data-target="95" data-suffix="%">0%</span>
+            <div class="stat-lbl">Finissent dans l'environnement</div>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num" data-target="6" data-suffix="T">0T</span>
+            <div class="stat-lbl">Trillions de cigarettes par an</div>
+          </div>
+        </div>
+        <ul class="problem-facts">
+          <li><div class="fact-dot"></div>Les mégots sont le déchet plastique #1 ramassé dans les océans</li>
+          <li><div class="fact-dot"></div>Chaque mégot lixivie des cancérigènes dans les eaux souterraines</li>
+          <li><div class="fact-dot"></div>Les filtres contiennent de l'acétate de cellulose — microplastique persistant</li>
+          <li><div class="fact-dot"></div>Les alternatives écologiques actuelles manquent de durabilité</li>
+        </ul>
+      </div>
+
+      <!-- Solution -->
+      <div class="reveal-right">
+        <p class="solution-intro">Infinicig a été conçue pour éliminer simultanément chacun de ces problèmes — sans demander aux fumeurs de faire des compromis sur l'expérience.</p>
+
+        <div class="benefit-card" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #bbf7d0;">
+          <div class="benefit-card-inner">
+            <div class="benefit-icon" style="background:#dcfce7;color:#16a34a;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>
+            </div>
+            <div>
+              <div class="benefit-title" style="color:#15803d;">Structure Organique Durable</div>
+              <div class="benefit-desc">Matériaux bio-synthétiques hybrides conçus pour la longévité. Un cycle matériel en boucle fermée — zéro déchet net.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="benefit-card" style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #bfdbfe;">
+          <div class="benefit-card-inner">
+            <div class="benefit-icon" style="background:#dbeafe;color:#2563eb;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            <div>
+              <div class="benefit-title" style="color:#1d4ed8;">Réduction des Toxines par IA</div>
+              <div class="benefit-desc">La chambre métabolique et l'IA neutralisent activement les résidus nocifs via la photosynthèse artificielle. Chaque inhalation est plus propre que la précédente.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="benefit-card" style="background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1px solid #fde68a;">
+          <div class="benefit-card-inner">
+            <div class="benefit-icon" style="background:#fef3c7;color:#d97706;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div>
+              <div class="benefit-title" style="color:#92400e;">Durabilité Industrielle</div>
+              <div class="benefit-desc">Un seul Infinicig remplace plus de 10 000 cigarettes jetables au cours de sa durée de vie. Un achat. Zéro déchet d'emballage. Pour toujours.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="impact-banner reveal">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="2" stroke-linecap="round" style="display:block;margin:0 auto 16px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <h3>Un Infinicig Remplace 10 000+ Jetables</h3>
+          <p>Le choix le plus durable que vous puissiez faire en tant que fumeur. Un seul achat pour toute une vie — propulsé par le soleil.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ PURCHASE ═══════════════ -->
+<section id="purchase">
+  <div class="purchase-sun"></div>
+  <!-- floating green orb -->
+  <div style="position:absolute;top:15%;right:10%;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,.15),transparent);filter:blur(30px);animation:floatSlow 8s ease-in-out infinite;pointer-events:none;"></div>
+
+  <div class="purchase-inner">
+    <div class="purchase-header reveal">
+      <div class="section-tag" style="background:#fef3c7;color:#b45309;">Édition Première Limitée</div>
+      <h2 class="section-h2">Possédez le <span class="text-gradient-gold">Futur</span></h2>
+      <p class="section-sub" style="margin:0 auto;">La première cigarette perpétuellement régénérante au monde. Un achat. Une vie d'utilisation. Production limitée à 1 000 unités.</p>
+    </div>
+
+    <div class="purchase-grid">
+
+      <!-- Product visual -->
+      <div class="purchase-product reveal-left">
+        <div style="padding:48px 40px;border-radius:32px;background:rgba(255,255,255,.75);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.6);box-shadow:0 24px 60px rgba(14,165,233,.12);display:flex;flex-direction:column;align-items:center;gap:28px;width:100%;">
+          <!-- Large cig -->
+          <div class="cig" style="animation:float 7s ease-in-out infinite;">
+            <div class="cig-tip" style="height:68px;border-radius:34px 0 0 34px;"></div>
+            <div class="cig-body" style="height:68px;width:320px;">
+              <div class="cig-shimmer"></div>
+            </div>
+            <div class="cig-band" style="height:68px;width:18px;"></div>
+            <div class="cig-filter" style="height:68px;width:100px;border-radius:0 34px 34px 0;">
+              <div class="cig-dots" style="right:22px;">
+                <div class="cig-dot"></div>
+                <div class="cig-dot"></div>
+                <div class="cig-dot"></div>
+              </div>
+              <div class="cig-ember" style="width:20px;height:20px;right:-10px;"></div>
+            </div>
+          </div>
+
+          <!-- Stars -->
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="color:#f59e0b;font-size:1.1rem;">★★★★★</span>
+            <span style="font-size:.85rem;color:var(--slate-500);">4.9 · 847 avis</span>
+          </div>
+
+          <!-- Price row -->
+          <div class="purchase-price-row">
+            <div class="purchase-price">
+              <div class="purchase-price-main">€<span class="text-gradient">1 000</span></div>
+              <div class="purchase-price-sub">Investissement unique · Livraison mondiale offerte</div>
+            </div>
+            <div class="purchase-savings">
+              <div class="purchase-savings-main">Remplace 10 000+ jetables</div>
+              <div class="purchase-savings-sub">Économise ~€50 000 sur sa durée de vie</div>
+            </div>
+          </div>
+
+          <!-- Badges -->
+          <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+            <div style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;background:var(--sky-50);border:1px solid #bae6fd;font-size:.78rem;font-weight:600;color:#0369a1;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/></svg>
+              Éco-Certifié
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;background:#eff6ff;border:1px solid #bfdbfe;font-size:.78rem;font-weight:600;color:#1d4ed8;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              IA Embarquée
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;background:#f0fdf4;border:1px solid #bbf7d0;font-size:.78rem;font-weight:600;color:#15803d;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Garantie à Vie
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Purchase card -->
+      <div class="purchase-card reveal-right">
+        <div class="specs-table">
+          <div class="spec-row"><span class="spec-label">Système de Filtrage Intelligent</span><span class="spec-value">Inclus</span></div>
+          <div class="spec-row"><span class="spec-label">Chambre Métabolique</span><span class="spec-value">Gén. 1.0</span></div>
+          <div class="spec-row"><span class="spec-label">Réseau Nano-Vasculaire</span><span class="spec-value">1 200 canaux</span></div>
+          <div class="spec-row"><span class="spec-label">Panneaux Solaires</span><span class="spec-value">48 micro-cellules</span></div>
+          <div class="spec-row"><span class="spec-label">Processeur IA</span><span class="spec-value">InfiniCore™ v3</span></div>
+          <div class="spec-row"><span class="spec-label">Autonomie</span><span class="spec-value">Perpétuelle (solaire)</span></div>
+        </div>
+
+        <button class="btn-cart" id="cartBtn" onclick="addToCart()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          Ajouter au Panier
+        </button>
+        <button class="btn-order">Commander Maintenant — €1 000</button>
+
+        <div class="trust-badges">
+          <div class="trust-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/></svg>
+            <div class="trust-badge-lbl">Éco-Certifié</div>
+            <div class="trust-badge-sub">ISO 14001</div>
+          </div>
+          <div class="trust-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <div class="trust-badge-lbl">IA Embarquée</div>
+            <div class="trust-badge-sub">Neural Core</div>
+          </div>
+          <div class="trust-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <div class="trust-badge-lbl">Garantie Vie</div>
+            <div class="trust-badge-sub">Remplacement</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-logo">
+        <div class="footer-logo-dot"></div>
+        <span class="footer-logo-name">INFINICIG</span>
+      </div>
+      <div class="footer-links">
+        <a href="#">Politique de Confidentialité</a>
+        <a href="#">Conditions Générales</a>
+        <a href="#">Contact</a>
+      </div>
+      <span class="footer-copy">© 2024 Infinicig Technologies.</span>
+    </div>
+    <div class="footer-divider"></div>
+    <p class="footer-disclaimer">
+      Infinicig est un concept produit destiné exclusivement aux fumeurs adultes. La technologie de régénération décrite représente notre pipeline d'innovation. Les pré-commandes sont soumises à l'approbation réglementaire selon la juridiction.
+    </p>
+  </div>
+</footer>
+
+<script>
+// ── Nav scroll ──
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 48);
+});
+
+// ── Smooth scroll ──
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href');
+    const el = document.querySelector(id);
+    if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth' }); }
+  });
+});
+
+// ── Reveal on scroll ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => observer.observe(el));
+
+// ── Animated counters ──
+const countObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const el = entry.target;
+    const target = parseInt(el.dataset.target);
+    const suffix = el.dataset.suffix || '';
+    const duration = 2000;
+    const start = performance.now();
+    const tick = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(eased * target).toLocaleString('fr') + suffix;
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+    countObserver.unobserve(el);
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('[data-target]').forEach(el => countObserver.observe(el));
+
+// ── Particles ──
+const container = document.getElementById('particles');
+const colors = ['#0ea5e9','#38bdf8','#22c55e','#4ade80','#f59e0b','#fcd34d'];
+for (let i = 0; i < 45; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const size = Math.random() * 4 + 1.5;
+  const x = Math.random() * 100;
+  const y = Math.random() * 100;
+  const dur = Math.random() * 8 + 5;
+  const delay = Math.random() * 6;
+  const color = colors[Math.floor(Math.random() * colors.length)];
+  p.style.cssText = `
+    width:${size}px; height:${size}px; left:${x}%; top:${y}%;
+    background:${color}; opacity:.45;
+    animation-duration:${dur}s; animation-delay:${delay}s;
+    box-shadow:0 0 ${size * 3}px ${size}px ${color}55;
+  `;
+  container.appendChild(p);
+}
+
+// ── Cart ──
+function addToCart() {
+  const btn = document.getElementById('cartBtn');
+  btn.classList.add('added');
+  btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Ajouté au Panier !`;
+  setTimeout(() => {
+    btn.classList.remove('added');
+    btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg> Ajouter au Panier`;
+  }, 2500);
+}
+
+// ── Mobile menu (simple) ──
+function toggleMenu() {
+  const links = document.querySelector('.nav-links');
+  if (!links) return;
+  const open = links.style.display === 'flex';
+  links.style.cssText = open ? '' : 'display:flex;flex-direction:column;position:fixed;top:70px;left:0;right:0;background:rgba(255,255,255,.96);backdrop-filter:blur(20px);padding:24px;gap:20px;z-index:99;border-bottom:1px solid #e0f2fe;';
+}
+</script>
+</body>
+</html>
